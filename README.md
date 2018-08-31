@@ -2,6 +2,37 @@
 
 A custom Alexa skill for the A-Ms
 
+### Intent ideas
+- [ ] Send an email to Katie/Innes with our availabilty for the next month
+  - Also for any time interval
+  - Might also want details of the events before/after available windows.
+- [ ] Check if we are free on a given date.
+  - "Ask house keeper if we are free tomorrow/next Thursday'
+  - "Ask house keeper if we are free on the 23rd of October'
+  -- This will probably require the use of arrow/maya for converting human time
+  specifications into date times.
+  -- Check to see if Alexa can do this for us?
+- [ ] Check todoist tasks by project name
+  - This will need to first pull all project name -> ID mappings and then get
+  the projects.
+- [ ] Check todoist tasks by due date
+  - Simple querying via the API
+- [ ] Create a new todoist task
+  - Default to inbox but allow specific project as well.
+- [ ] Maintain the shopping list
+  - Store in Todoist for easy editing: the Alexa shopping list is a pain!
+- [ ] Email the shopping list to Katie/Innes
+- [ ] Add a predefined set of tasks to todoist
+  - Packing for going on holiday
+  - Katie being ill
+  - Morning routine for the girls
+- [ ] Read out all tasks in a given project
+  - "What is left to do on 'morning routine'"
+- [ ] Check when Innes can come home today
+  - Requires adding an API to STATs or assuming that toggl is correct!
+  - "Assuming Innes has been recording everything correctly in toggle, he can
+  finish at XXXX today"
+
 
 ### SSML
 Alexa uses Speach Synthesis Markup Language to allow you to give expression to

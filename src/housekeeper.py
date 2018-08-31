@@ -26,33 +26,27 @@ def lambda_handler(event, _context):
 @ask.intent('daily_summary')
 def daily_summary():
     '''
-    Give an overview of what we are doing today
+    Give an overview of what we are doing over the next 7 days.
     '''
+    all_events = []
+
     # Use threading to fetch all of the calendar details at the same time
-    def named_events(name, url):
-        return (name, events(url))
-
-    resp = []
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as ex:
-        futures = (
-            ex.submit(named_events, name, url)
-            for (name, url) in calendars.items()
-        )
-
+        futures = (ex.submit(events, url) for (name, url) in calendars.items())
         for f in concurrent.futures.as_completed(futures):
             try:
-                name, evts = f.result()
-                data = f'{name} has {" ".join(describe(evts))}'
-                resp.append(data)
+                evts = f.result()
+                if evts:
+                    all_events.extend(evts)
             except Exception as e:
+                # If something went wrong then skip that calendar
                 pass
 
-    if resp:
-        txt = " <break time='1s' /> ".join(resp)
-        return statement(f'<speak>{txt}</speak>')
-    else:
-        return statement(
-            ('It looks like there are no events in your'
-             ' calendars for the upcoming week')
-        )
+    if all_events:
+        summaries = ' '.join(describe(sorted(all_events)))
+        return statement(f"<speak>Here's what I found: {summaries}</speak>")
+
+    return statement(
+        ('<speak>It looks like there are no events in your'
+         ' calendars for the upcoming week</speak>')
+    )
