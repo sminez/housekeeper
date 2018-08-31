@@ -2,20 +2,33 @@
 
 A custom Alexa skill for the A-Ms
 
-## How to use the build tool
 
-```bash
-sudo docker build -t lambda-builder .
-sudo docker run -i -t -v $PWD:/code lambda-builder ./build-zip.sh project-name
-```
+### SSML
+Alexa uses Speach Synthesis Markup Language to allow you to give expression to
+the way your responses are said. Details here:
+    https://developer.amazon.com/docs/custom-skills/speech-synthesis-markup-language-ssml-reference.html
 
-This produces a .zip file which can be uploaded manually to lambda
 
-## Project structure
-If any other projects are created that need to use the build tool then they need
-to have the following directory structure:
+### Building and deploying
+The official AWS docs on deploying a zipped archive to lambda are found here:
+    https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
 
-- project
-  - src
-    - myscript.py
-  - requirements.txt
+This has been scripted as part of `build-zip.sh` so running that will create a
+new archive.
+
+NOTE:
+  - zip archives are gitignored
+  - secrets.py is gitignored and will need to be present in the `src` directory
+  in order for everything to work.
+
+
+### Lambda
+The lambda function can be found here:
+    https://eu-west-1.console.aws.amazon.com/lambda/home?region=eu-west-1#/functions/house-keeper?newFunction=true&tab=graph
+
+
+### Alexa dev portal
+Management of the skill itself if done here:
+    https://developer.amazon.com/alexa/console/ask/build/custom/amzn1.ask.skill.923c4841-d79c-4f8d-b511-5d8334e8b63e/development/en_GB/invocation
+
+Note that the user account is under sminez@gmail.com

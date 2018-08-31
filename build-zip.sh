@@ -1,36 +1,26 @@
 #!/bin/bash
+# Build a deployment zip archive of the source for housekeeper
 
-if [ $# -ne 1 ]
-  then
-    echo "You must supply a project name"
-    exit
-fi
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-PROJECT="$1"
+TODAY=$(date "+%Y-%m-%d")
 
-if [ -d /code/target ]
-  then
-    rm -rf /code/target
-fi
-mkdir -p /build
-mkdir -p /code/target
-cd /build
-
-pip3 install virtualenv
-virtualenv $PROJECT
-source $PROJECT/bin/activate
-pip install -r /code/$PROJECT/requirements.txt
-
+printf "${YELLOW}Creating build directory...${NC}\n"
+cp -r src build
+printf "${YELLOW}Installing requirements...${NC}\n"
+source ~/venvs/housekeeper/bin/activate
+pip install -r requirements.txt
+# python3.6 -m pip install -r requirements.txt -t build
+printf "${YELLOW}Creating archive...${NC}\n"
+cd build
+zip -r9 ~/Personal/housekeeper/build/housekeeper_${TODAY}.zip .
 #start bundling
-cd /code/$PROJECT/src
-zip -r9 /code/target/bundle.zip *
-cd /code/$PROJECT/binaries
-zip -r9 /code/target/bundle.zip *
-cd $VIRTUAL_ENV/lib/python3.6/site-packages
-zip -r9 /code/target/bundle.zip *
-
-#copy this to a file we can use elsewhere
-DATE=`date +%Y-%m-%d`
-FILENAME="$PROJECT-$DATE.zip"
-cp /code/target/bundle.zip /code/$FILENAME
-echo "created .zip file $FILENAME"
+cd ~/venvs/housekeeper/lib/python3.6/site-packages
+zip -r9 ~/Personal/housekeeper/build/housekeeper_${TODAY}.zip .
+cd ~/Personal/housekeeper/build
+mv housekeeper_${TODAY}.zip ../
+cd ../
+printf "${YELLOW}Removing build artifacts...${NC}\n"
+rm -rf build
+printf "${YELLOW}Done${NC}\n"

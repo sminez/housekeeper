@@ -1,0 +1,4 @@
+calendar_events: |
+  <speak>
+  {% for event in events %}{{ event }}{{ ', ' if not loop.last }}{{ 'and ' if loop.revindex0 == 1 }}{% endfor %}.
+  </speak>

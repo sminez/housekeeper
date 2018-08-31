@@ -5,10 +5,34 @@ from datetime import datetime, date, timedelta
 
 import requests
 from pytz import utc
+from arrow import Arrow
 from icalendar import Calendar
 
 DEFAULT_QUERY_LENGTH = timedelta(days=7)
 DEFAULT_ENCODING = 'utf-8'
+
+
+def describe(events):
+    '''
+    Convert a set of events to a set of statements.
+    '''
+    punc = '.,?!'
+    stmnts = []
+    today = utc.localize(datetime.combine(date.today(), datetime.min.time()))
+    for e in events:
+        if e.all_day and e.start == today:
+            s = f'Today: {e.summary}'
+        else:
+            a = Arrow(*e.start.timetuple()[:5])
+            s = f'{a.humanize()}, {e.summary}'
+
+        # Close of the sentence to give the correct speach pattern to Alexa
+        if s[-1] not in punc:
+            s += '.'
+
+        stmnts.append(s)
+
+    return stmnts
 
 
 def events(url=None, start=None, end=None, encoding=DEFAULT_ENCODING):

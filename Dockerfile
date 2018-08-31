@@ -16,10 +16,8 @@ RUN apt-get install -y libtool
 RUN apt-get install -y wget
 
 #grab and install python deps
-RUN easy_install pip
+RUN easy_install pip3
 
 #create code mount
 ADD . /code
 WORKDIR /code
-
-RUN . /code/install-lib-sodium.sh
