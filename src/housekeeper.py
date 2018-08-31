@@ -1,7 +1,9 @@
 '''
 Our custom housekeeper Alexa skill
 '''
-from flask import Flask, render_template
+import concurrent.futures
+
+from flask import Flask
 from flask_ask import Ask, statement
 
 from todoist import TodoistAPI
@@ -26,13 +28,25 @@ def daily_summary():
     '''
     Give an overview of what we are doing today
     '''
+    # Use threading to fetch all of the calendar details at the same time
+    def named_events(name, url):
+        return (name, events(url))
+
     resp = []
-    # Get calendar info
-    for name, url in calendars.items():
-        evts = events(url)
-        if evts:
-            e_str = ' '.join(describe(evts))
-            resp.append(f'{name} has: {e_str}')
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as ex:
+        futures = (
+            ex.submit(named_events, name, url)
+            for (name, url) in calendars.items()
+        )
+
+        for f in concurrent.futures.as_completed(futures):
+            try:
+                name, evts = f.result()
+                data = f'{name} has {" ".join(describe(evts))}'
+                resp.append(data)
+            except Exception as e:
+                pass
 
     if resp:
         txt = " <break time='1s' /> ".join(resp)
