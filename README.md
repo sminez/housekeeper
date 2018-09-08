@@ -1,6 +1,11 @@
 # Housekeeper
 
-A custom Alexa skill for the A-Ms
+A custom Alexa skill for the A-Ms.
+
+`interaction_model.json` _should_ be the latest interaction model build in the
+Alexa dev portal. Don't count on this being correct, but use it for quick
+reference!
+
 
 ### Intent ideas
 - [ ] Send an email to Katie/Innes with our availabilty for the next month

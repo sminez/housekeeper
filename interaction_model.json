@@ -1,0 +1,158 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "house keeper",
+            "intents": [
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "what you can do",
+                        "for help"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "daily_summary",
+                    "slots": [],
+                    "samples": [
+                        "to give me our daily summary",
+                        "to give me the daily summary",
+                        "what we are doing to day",
+                        "what is happening today",
+                        "give me the daily summary"
+                    ]
+                },
+                {
+                    "name": "lunch_today",
+                    "slots": [],
+                    "samples": [
+                        "what is for lunch",
+                        "what's for school lunch",
+                        "what can i have for school dinners",
+                        "what can I have for school lunch",
+                        "what can I have for lunch",
+                        "what's for school dinners",
+                        "what's for lunch today"
+                    ]
+                },
+                {
+                    "name": "free_on_date",
+                    "slots": [
+                        {
+                            "name": "date",
+                            "type": "AMAZON.DATE",
+                            "samples": [
+                                "are we free on {date}",
+                                "on {date}",
+                                "{date}"
+                            ]
+                        }
+                    ],
+                    "samples": [
+                        "if we can do {date}",
+                        "if we are available on {date}",
+                        "if we are free on {date}",
+                        "are we free on {date}"
+                    ]
+                },
+                {
+                    "name": "availability",
+                    "slots": [
+                        {
+                            "name": "name",
+                            "type": "AMAZON.FirstName"
+                        },
+                        {
+                            "name": "time_range",
+                            "type": "AMAZON.DATE"
+                        }
+                    ],
+                    "samples": [
+                        "to email {name} our availability for {time_range}",
+                        "to send {name} our availabilty for {time_range}",
+                        "for our availability {time_range}",
+                        "what our availabilty for {time_range} is like",
+                        "to send our availabilty for {time_range} to {name}"
+                    ]
+                }
+            ],
+            "types": []
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "free_on_date",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "date",
+                            "type": "AMAZON.DATE",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.428548945579.1463797543430"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "availability",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "name",
+                            "type": "AMAZON.FirstName",
+                            "confirmationRequired": false,
+                            "elicitationRequired": false,
+                            "prompts": {}
+                        },
+                        {
+                            "name": "time_range",
+                            "type": "AMAZON.DATE",
+                            "confirmationRequired": false,
+                            "elicitationRequired": false,
+                            "prompts": {}
+                        }
+                    ]
+                }
+            ]
+        },
+        "prompts": [
+            {
+                "id": "Elicit.Slot.667707030985.366016871941",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "who should I send it to?"
+                    }
+                ]
+            },
+            {
+                "id": "Elicit.Slot.428548945579.1463797543430",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "which date would you like me to check?"
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,5 +1,8 @@
 '''
 Our custom housekeeper Alexa skill
+
+See here for details on slot types
+  >>> https://developer.amazon.com/docs/custom-skills/slot-type-reference.html
 '''
 from datetime import date
 from calendar import monthcalendar, weekday
@@ -53,6 +56,31 @@ def daily_summary():
     )
 
 
+@ask.intent('free_on_date', default={'date': None})
+def free_on_date(date):
+    '''
+    Check to see if we are free on a given date
+    '''
+    pass
+
+
+@ask.intent('availability', default={'name': None, 'time_range': None})
+def availability(name, time_range):
+    '''
+    Either read or email our availability for a given time range.
+
+    time_range data is as follows:
+      specific date  -->  20XX-XX-XX (possibly as a datetime?)
+      week           -->  20XX-WXX   (i.e year-week_number)
+      month          -->  20XX-XX    (i.e. year-month_number)
+
+    The user can be quite abstract in their request, i.e. 'are we free
+    the week of the 15th of october?' and Alexa _should_ be able to
+    parse it.
+    '''
+    pass
+
+
 @ask.intent('lunch_today')
 def lunch_today():
     '''
@@ -63,6 +91,13 @@ def lunch_today():
     month = today.month
     year = today.year
     cal = monthcalendar(year, month)
+
+    # Check to see if it's the weekend...
+    if weekday(today.year, today.month, today.day) > 4:
+        return statement(
+            ("<speak>You silly sausage, it's the weekend!"
+             " You don't have school lunch at the weekend!</speak>")
+        )
 
     # Find the date of Monday this week so we can determine which of the
     # three weekly menus we need to look at.
@@ -91,18 +126,11 @@ def lunch_today():
     try:
         week_menu = MENUS[WEEKS[monday]]
     except KeyError:
-        if weekday(today.day, today.month, today.year) > 4:
-            # It's the weekend
-            return statement(
-                ("<speak>You silly sausage, it's the weekend!"
-                 " You don't have school lunch at the weekend!</speak>")
-            )
-        else:
-            return statement(
-                ("<speak>I'm sorry, Daddy needs to give me the"
-                 " new menu! If you ask him nicely, he can get it for me"
-                 " and I can tell you what is for lunch tomorrow.</speak>")
-            )
+        return statement(
+            ("<speak>I'm sorry, Daddy needs to give me the"
+             " new menu! If you ask him nicely, he can get it for me"
+             " and I can tell you what is for lunch tomorrow.</speak>")
+        )
 
     # Get the data we need for the response
     today = DAYS[ix]

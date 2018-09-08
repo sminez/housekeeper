@@ -22,9 +22,14 @@ def describe(events):
     for e in events:
         if e.all_day and e.start == today:
             s = f'Today: {e.summary}'
+        # Work around some quirks in the Arrow.humanize() method
+        elif e.all_day and e.start == today + timedelta(days=1):
+            s = f'Tomorrow: {e.summary}'
+        elif e.all_day and e.start == today + timedelta(days=2):
+            s = f'In two days: {e.summary}'
         else:
             a = Arrow(*e.start.timetuple()[:5])
-            s = f'{a.humanize()}, {e.summary}'
+            s = f'{a.humanize()}: {e.summary}'
 
         # Close of the sentence to give the correct speach pattern to Alexa
         if s[-1] not in punc:
@@ -74,10 +79,16 @@ def parse_events(content, start=None, end=None):
 
     for component in calendar.walk():
         if component.name == "VEVENT":
-            evt = Event(component)
+            e_start = normalize(component.get('dtstart').dt)
+            e_end = component.get('dtend')
+            if e_end is not None:
+                e_end = normalize(e_end.dt)
+            else:
+                e_end = e_start+timedelta(days=1)
 
-            if evt.start <= end and evt.end >= start:
+            if e_start <= end and e_end >= start:
                 # Event is in range so keep it
+                evt = Event(component)
                 found.append(evt)
 
     # Sort into ascending order
