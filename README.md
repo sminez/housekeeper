@@ -11,7 +11,7 @@ reference!
 - [ ] Send an email to Katie/Innes with our availabilty for the next month
   - Also for any time interval
   - Might also want details of the events before/after available windows.
-- [ ] Check if we are free on a given date.
+- [x] Check if we are free on a given date.
   - "Ask house keeper if we are free tomorrow/next Thursday'
   - "Ask house keeper if we are free on the 23rd of October'
   -- This will probably require the use of arrow/maya for converting human time

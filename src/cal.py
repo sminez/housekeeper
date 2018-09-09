@@ -8,25 +8,50 @@ from pytz import utc
 from arrow import Arrow
 from icalendar import Calendar
 
+from utils import run_many
+
 DEFAULT_QUERY_LENGTH = timedelta(days=7)
 DEFAULT_ENCODING = 'utf-8'
 
 
+def all_calendar_events_in_range(urls, start, end):
+    '''
+    Get all calendar events for the given calendar urls that
+    fall within the specified range.
+    '''
+    def _evts(url):
+        return events(url, start=start, end=end)
+
+    args = [(url,) for url in urls]
+    return sum(run_many(_evts, args), [])
+
+
 def describe(events):
     '''
-    Convert a set of events to a set of statements.
+    Convert a set of events to a set of statements relative to today.
+    '''
+    today = date.today()
+    return describe_relative(events, today)
+
+
+def describe_relative(events, day):
+    '''
+    Convert a set of events to a set of statements relative to the given date.
     '''
     punc = '.,?!'
     stmnts = []
-    today = utc.localize(datetime.combine(date.today(), datetime.min.time()))
+    day = utc.localize(datetime.combine(day, datetime.min.time()))
+
     for e in events:
-        if e.all_day and e.start == today:
+        if e.all_day and e.start == day:
             s = f'Today: {e.summary}'
         # Work around some quirks in the Arrow.humanize() method
-        elif e.all_day and e.start == today + timedelta(days=1):
+        elif e.all_day and e.start == day + timedelta(days=1):
             s = f'Tomorrow: {e.summary}'
-        elif e.all_day and e.start == today + timedelta(days=2):
+        elif e.all_day and e.start == day + timedelta(days=2):
             s = f'In two days: {e.summary}'
+        elif e.all_day and e.start < day:
+            s = f'Ongoing: {e.summary}'
         else:
             a = Arrow(*e.start.timetuple()[:5])
             s = f'{a.humanize()}: {e.summary}'

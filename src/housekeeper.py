@@ -4,15 +4,16 @@ Our custom housekeeper Alexa skill
 See here for details on slot types
   >>> https://developer.amazon.com/docs/custom-skills/slot-type-reference.html
 '''
-from datetime import date
+from datetime import date, timedelta
 from calendar import monthcalendar, weekday
 
 from flask import Flask
 from flask_ask import Ask, statement
 
-from utils import run_many
-from cal import events, describe
 from secrets import calendars
+from utils import run_many, parse_amazon_date_to_range
+from cal import events, describe, describe_relative, \
+    all_calendar_events_in_range
 
 from data.menus import autumn_2018_weeks as WEEKS
 from data.menus import autumn_2018_menus as MENUS
@@ -56,12 +57,29 @@ def daily_summary():
     )
 
 
-@ask.intent('free_on_date', default={'date': None})
-def free_on_date(date):
+@ask.intent('free_on_date', convert={'day': 'date'})
+def free_on_date(day):
     '''
-    Check to see if we are free on a given date
+    Check to see if we are free on a given date.  The user can be quite
+    abstract in their request, i.e. 'are we free the week of the 15th of
+    october?' and Alexa _should_ be able to parse it.
     '''
-    pass
+    all_events = all_calendar_events_in_range(
+        calendars.values(),
+        day,
+        day + timedelta(hours=24),
+    )
+
+    if len(all_events) > 0:
+        summaries = ' '.join(describe_relative(all_events, day))
+        return statement(
+            (f'It looks like you are not free on {day}.'
+             f' You have, {summaries}')
+        )
+
+    return statement(
+        "I can't see anything in your calendars. Looks like you're free!"
+    )
 
 
 @ask.intent('availability', default={'name': None, 'time_range': None})
@@ -69,16 +87,23 @@ def availability(name, time_range):
     '''
     Either read or email our availability for a given time range.
 
-    time_range data is as follows:
-      specific date  -->  20XX-XX-XX (possibly as a datetime?)
-      week           -->  20XX-WXX   (i.e year-week_number)
-      month          -->  20XX-XX    (i.e. year-month_number)
-
-    The user can be quite abstract in their request, i.e. 'are we free
-    the week of the 15th of october?' and Alexa _should_ be able to
-    parse it.
+    Not using flask_ask conversion here as we need to know if we are
+    being asked about a day, week or month.
     '''
-    pass
+    start, stop = parse_amazon_date_to_range(time_range)
+    all_events = all_calendar_events_in_range(calendars.values(), start, stop)
+    event_days = {e.start.date() for e in all_events}
+    all_days = {start + timedelta(days=d) for d in range((stop - start).days)}
+    free_days = all_days - event_days
+
+    if name is not None:
+        # We are sending an email
+        return statement("I haven't implemented sending an email yet")
+
+    return statement(
+        (f'You are free on {len(free_days)} days in {time_range}:'
+         f' {", ".join(str(d) for d in free_days)}.')
+    )
 
 
 @ask.intent('lunch_today')
