@@ -135,15 +135,14 @@ def lunch_today():
             # look at that calendar instead.
             if monday == 0:
                 if today.month > 1:
-                    cal = monthcalendar(year, today.month-1)
+                    _cal = monthcalendar(year, today.month-1)
                     month -= 1
                 else:
-                    cal = monthcalendar(year-1, 12)
+                    _cal = monthcalendar(year-1, 12)
                     month = 12
                     year -= 1
 
-                monday = cal[-1][0]
-                ix = cal[-1].index(today.day)
+                monday = _cal[-1][0]
             break
 
     monday = date(year, month, monday)
@@ -151,6 +150,11 @@ def lunch_today():
     try:
         week_menu = MENUS[WEEKS[monday]]
     except KeyError:
+        if today < max(WEEKS.keys()):
+            return statement(
+                "<speak>Are you on half term silly sausage?</speak>"
+            )
+
         return statement(
             ("<speak>I'm sorry, Daddy needs to give me the"
              " new menu! If you ask him nicely, he can get it for me"
