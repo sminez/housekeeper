@@ -15,8 +15,8 @@ from utils import run_many, parse_amazon_date_to_range
 from cal import events, describe, describe_relative, \
     all_calendar_events_in_range
 
-from data.menus import autumn_2018_weeks as WEEKS
-from data.menus import autumn_2018_menus as MENUS
+from data.menus import spring_2019_weeks as WEEKS
+from data.menus import spring_2019_menus as MENUS
 
 
 # Top level Flask app
@@ -36,6 +36,19 @@ def lambda_handler(event, _context):
     Entrypoint for an incoming AWS Lambda event
     '''
     return ask.run_aws_lambda(event)
+
+
+@ask.launch
+def launched():
+    return statement(
+        ('Welcome to the Fisher gate lunch menu. To hear the menu for today,'
+         ' tell your Alexa to "ask Fisher gate what is for lunch?"')
+    )
+
+
+@ask.session_ended
+def session_ended():
+    return "{}", 200
 
 
 @ask.intent('daily_summary')
@@ -156,8 +169,8 @@ def lunch_today():
             )
 
         return statement(
-            ("<speak>I'm sorry, Daddy needs to give me the"
-             " new menu! If you ask him nicely, he can get it for me"
+            ("<speak>I'm sorry, someone needs to give me the"
+             " new menu! If you tell your teacher, they can get it for me"
              " and I can tell you what is for lunch tomorrow.</speak>")
         )
 
