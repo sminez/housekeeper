@@ -2,5 +2,5 @@ pip==9.0.1
 flask-ask==0.9.8
 pytz==2018.5
 arrow==0.12.1
-requests==2.19.1
+requests==2.20.0
 icalendar==4.0.2
